@@ -12,6 +12,7 @@ class NavButton extends StatelessWidget {
   final double offsetY;
   final ValueChanged<int> onTap;
   final NavItemSplashType splashType;
+  final double? splashRadius;
   final Widget child;
 
   NavButton({
@@ -23,6 +24,7 @@ class NavButton extends StatelessWidget {
     required this.index,
     required this.offsetY,
     required this.splashType,
+    required this.splashRadius,
     required this.child,
   });
 
@@ -63,16 +65,20 @@ class NavButton extends StatelessWidget {
       case NavItemSplashType.rectangle:
         current = InkWell(
           onTap: () => onTap(index),
+          radius: splashRadius,
           customBorder: shape,
           child: current,
         );
         break;
       case NavItemSplashType.circle:
-        current = InkResponse(
-          onTap: () => onTap(index),
-          containedInkWell: true,
-          customBorder: shape,
-          child: current,
+        current = Center(
+          child: InkResponse(
+            onTap: () => onTap(index),
+            containedInkWell: true,
+            radius: splashRadius,
+            customBorder: shape,
+            child: current,
+          ),
         );
         break;
     }

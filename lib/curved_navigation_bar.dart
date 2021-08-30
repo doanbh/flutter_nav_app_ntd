@@ -38,6 +38,7 @@ class CurvedNavigationBar extends StatefulWidget {
     this.buttonPadding = const EdgeInsets.all(8.0),
     this.buttonOffsetY = 55,
     this.itemSplashType = NavItemSplashType.none,
+    this.itemSplashRadius,
     this.backgroundColor = Colors.transparent,
     this.onTap,
     _LetIndexPage? letIndexChange,
@@ -81,6 +82,9 @@ class CurvedNavigationBar extends StatefulWidget {
   final EdgeInsetsGeometry buttonPadding;
 
   final NavItemSplashType itemSplashType;
+
+  /// Only apply to `NavItemSplashType.circle`
+  final double? itemSplashRadius;
 
   /// Function handling taps on items
   final ValueChanged<int>? onTap;
@@ -220,6 +224,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                             index: widget.items.indexOf(item),
                             offsetY: widget.height * 2,
                             splashType: widget.itemSplashType,
+                            splashRadius: widget.itemSplashRadius,
                             child: Center(child: item),
                           ),
                         ),
