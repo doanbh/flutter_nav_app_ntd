@@ -45,7 +45,7 @@ class CurvedNavigationBar extends StatefulWidget {
     this.animationCurve = Curves.easeOut,
     this.animationDuration = const Duration(milliseconds: 600),
     this.height = 75.0,
-  })  : letIndexChange = letIndexChange ?? ((_) => true),
+  })  : letSameIndexChange = letIndexChange ?? ((_) => false),
         assert(items.length >= 1),
         assert(0 <= index && index < items.length),
         super(key: key);
@@ -90,9 +90,9 @@ class CurvedNavigationBar extends StatefulWidget {
   final ValueChanged<int>? onTap;
 
   /// Function which takes page index as argument and returns bool.
-  /// If function returns false then page is not changed on button tap.
-  /// It returns true by default
-  final _LetIndexPage letIndexChange;
+  /// If function returns false then current page is not changed on button tap.
+  /// It returns false by default
+  final _LetIndexPage letSameIndexChange;
 
   /// Curves interpolating button change animation
   ///
@@ -244,13 +244,12 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
   }
 
   void _buttonTap(int index) {
-    if (!widget.letIndexChange(index)) {
-      return;
-    }
-    if (widget.onTap != null) {
-      widget.onTap!(index);
-    }
+    if (index == _endingIndex && !widget.letSameIndexChange(index)) return;
+
+    if (widget.onTap != null) widget.onTap!(index);
+
     final newPosition = index / _length;
+
     setState(() {
       _startingPos = _pos;
       _endingIndex = index;
