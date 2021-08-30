@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 
-class NavCustomPainter extends CustomPainter {
-  late double loc;
-  late double s;
-  Color color;
-  TextDirection textDirection;
-
-  NavCustomPainter(
-      double startingLoc, int itemsLength, this.color, this.textDirection) {
+class PlanetGravityStylePainter extends CustomPainter {
+  PlanetGravityStylePainter({
+    required double startingLocX,
+    required int itemsLength,
+    required this.color,
+    required TextDirection textDirection,
+  }) {
     final span = 1.0 / itemsLength;
-    s = 0.2;
-    double l = startingLoc + (span - s) / 2;
-    loc = textDirection == TextDirection.rtl ? 0.8 - l : l;
+    double l = startingLocX + (span - _s) / 2;
+    locX = textDirection == TextDirection.rtl ? 0.8 - l : l;
   }
+
+  late final double locX;
+  late final Color color;
+
+  double get _s => 0.2;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -22,21 +25,21 @@ class NavCustomPainter extends CustomPainter {
 
     final path = Path()
       ..moveTo(0, 0)
-      ..lineTo((loc - 0.1) * size.width, 0)
+      ..lineTo((locX - 0.1) * size.width, 0)
       ..cubicTo(
-        (loc + s * 0.20) * size.width,
+        (locX + _s * 0.20) * size.width,
         size.height * 0.05,
-        loc * size.width,
+        locX * size.width,
         size.height * 0.60,
-        (loc + s * 0.50) * size.width,
+        (locX + _s * 0.50) * size.width,
         size.height * 0.60,
       )
       ..cubicTo(
-        (loc + s) * size.width,
+        (locX + _s) * size.width,
         size.height * 0.60,
-        (loc + s - s * 0.20) * size.width,
+        (locX + _s - _s * 0.20) * size.width,
         size.height * 0.05,
-        (loc + s + 0.1) * size.width,
+        (locX + _s + 0.1) * size.width,
         0,
       )
       ..lineTo(size.width, 0)

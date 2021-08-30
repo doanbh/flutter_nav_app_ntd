@@ -1,14 +1,18 @@
-import 'package:flutter/material.dart';
+import 'dart:ui';
+
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:flutter/material.dart';
 
-void main() => runApp(MaterialApp(home: BottomNavBar()));
+void main() => runApp(MaterialApp(home: MyApp()));
 
-class BottomNavBar extends StatefulWidget {
+class MyApp extends StatefulWidget {
   @override
-  _BottomNavBarState createState() => _BottomNavBarState();
+  _MyAppState createState() => _MyAppState();
 }
 
-class _BottomNavBarState extends State<BottomNavBar> {
+const Color darkBlue = Color.fromARGB(255, 18, 32, 47);
+
+class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   int _page = 0;
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
 
@@ -18,19 +22,43 @@ class _BottomNavBarState extends State<BottomNavBar> {
       extendBody: true,
       bottomNavigationBar: CurvedNavigationBar(
         key: _bottomNavigationKey,
+        navStyle: NavStyle.mould,
         index: 0,
         height: 60.0,
+        buttonOffsetY: 45,
         items: <Widget>[
-          Icon(Icons.add, size: 30),
-          Icon(Icons.list, size: 30),
-          Icon(Icons.compare_arrows, size: 30),
-          Icon(Icons.call_split, size: 30),
-          Icon(Icons.perm_identity, size: 30),
+          Icon(
+            Icons.add,
+            size: 25,
+            color: Colors.white.withOpacity(_page == 0 ? 1.0 : 0.95),
+          ),
+          Icon(
+            Icons.list,
+            size: 25,
+            color: Colors.white.withOpacity(_page == 1 ? 1.0 : 0.95),
+          ),
+          Icon(
+            Icons.compare_arrows,
+            size: 25,
+            color: Colors.white.withOpacity(_page == 2 ? 1.0 : 0.95),
+          ),
+          Icon(
+            Icons.call_split,
+            size: 25,
+            color: Colors.white.withOpacity(_page == 3 ? 1.0 : 0.95),
+          ),
+          Icon(
+            Icons.perm_identity,
+            size: 25,
+            color: Colors.white.withOpacity(_page == 4 ? 1.0 : 0.95),
+          ),
         ],
-        color: Colors.white,
-        buttonBackgroundColor: Colors.white,
+        color: darkBlue,
+        buttonBackgroundColor: darkBlue,
+        backgroundColor: Colors.transparent,
         animationCurve: Curves.easeInOut,
         animationDuration: Duration(milliseconds: 600),
+        buttonPadding: const EdgeInsets.all(10),
         onTap: (index) {
           setState(() {
             _page = index;
