@@ -299,10 +299,13 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
       );
 
   Widget _buildSelectedIcon(MaterialType type) {
-    final icon = Padding(
-      key: ValueKey(_pos),
-      padding: widget.buttonPadding,
-      child: _icon,
+    // wrap w/ Center because case input icon is CustomPainter
+    final icon = Center(
+      key: ValueKey(_endingIndex),
+      child: Padding(
+        padding: widget.buttonPadding,
+        child: _icon,
+      ),
     );
 
     if (type == MaterialType.transparency) return icon;
