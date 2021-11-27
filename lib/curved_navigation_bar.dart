@@ -40,6 +40,8 @@ class CurvedNavigationBar extends StatefulWidget {
     this.itemSplashType = NavItemSplashType.none,
     this.itemSplashRadius,
     this.backgroundColor = Colors.transparent,
+    this.shaderCallback,
+    this.blendMode = BlendMode.modulate,
     this.onTap,
     _LetIndexPage? letIndexChange,
     this.animationCurve = Curves.easeOut,
@@ -85,6 +87,22 @@ class CurvedNavigationBar extends StatefulWidget {
 
   /// Only apply to `NavItemSplashType.circle`
   final double? itemSplashRadius;
+
+  /// Called to create the [dart:ui.Shader] that generates the mask.
+  ///
+  /// The shader callback is called with the current size of the child so that
+  /// it can customize the shader to the size and location of the child.
+  ///
+  /// Typically this will use a [LinearGradient], [RadialGradient], or
+  /// [SweepGradient] to create the [dart:ui.Shader], though the
+  /// [dart:ui.ImageShader] class could also be used.
+  final Shader Function(Rect)? shaderCallback;
+
+  /// The [BlendMode] to use when applying the shader to the child.
+  ///
+  /// The default, [BlendMode.modulate], is useful for applying an alpha blend
+  /// to the child. Other blend modes can be used to create other effects.
+  final BlendMode blendMode;
 
   /// Function handling taps on items
   final ValueChanged<int>? onTap;
@@ -172,70 +190,78 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
         _defaultNavStyle.pathBuilder(
             _pos, navSize, _length, Directionality.of(context));
 
-    return ColoredBox(
-      color: widget.backgroundColor,
-      child: SizedBox.fromSize(
-        size: navSize,
-        child: Stack(
-          clipBehavior: Clip.none,
-          alignment: Alignment.bottomCenter,
-          children: [
-            Positioned(
-              bottom: -widget.buttonOffsetY * 1.4,
-              left: Directionality.of(context) == TextDirection.rtl
-                  ? null
-                  : _pos * size.width,
-              right: Directionality.of(context) == TextDirection.rtl
-                  ? _pos * size.width
-                  : null,
-              width: size.width / _length,
-              child: Center(
-                child: Transform.translate(
-                  offset: Offset(
-                    0,
-                    -(1 - _buttonHide) * widget.buttonOffsetY * 2,
-                  ),
-                  child: Material(
-                    color: widget.buttonBackgroundColor ?? widget.color,
-                    type: MaterialType.circle,
-                    child: Padding(
-                      padding: widget.buttonPadding,
-                      child: _icon,
-                    ),
-                  ),
-                ),
+    final Widget navBar = CustomPaint(
+      size: navSize,
+      painter: NavPainter(navPath, widget.color),
+    );
+
+    final Widget icons = Row(
+      children: widget.items
+          .map(
+            (item) => Expanded(
+              child: NavButton(
+                onTap: _buttonTap,
+                navPath: navPath,
+                navSize: navSize,
+                position: _pos,
+                length: _length,
+                index: widget.items.indexOf(item),
+                offsetY: widget.height * 2,
+                splashType: widget.itemSplashType,
+                splashRadius: widget.itemSplashRadius,
+                child: Center(child: item),
               ),
             ),
-            CustomPaint(
-              size: navSize,
-              painter: NavPainter(navPath, widget.color),
+          )
+          .toList(),
+    );
+
+    final Widget current;
+
+    if (widget.shaderCallback == null) {
+      current = SizedBox.fromSize(
+        size: navSize,
+        child: _buildStack(
+          [
+            _buidSelectedIconContainer(MaterialType.circle, size),
+            navBar,
+            icons,
+          ],
+        ),
+      );
+    } else {
+      current = SizedBox(
+        width: navSize.width,
+        height: navSize.height + widget.buttonPadding.vertical,
+        child: _buildStack(
+          [
+            _buildShaderMask(
+              _buildStack([
+                _buidSelectedIconContainer(MaterialType.circle, size),
+              ]),
+            ),
+            _buidSelectedIconContainer(MaterialType.transparency, size),
+            _buildShaderMask(
+              SizedBox(
+                height: navSize.height,
+                child: navBar,
+              ),
+            ),
+            SizedBox(
+              height: navSize.height,
               child: Material(
                 type: MaterialType.transparency,
-                child: Row(
-                  children: widget.items
-                      .map(
-                        (item) => Expanded(
-                          child: NavButton(
-                            onTap: _buttonTap,
-                            navPath: navPath,
-                            navSize: navSize,
-                            position: _pos,
-                            length: _length,
-                            index: widget.items.indexOf(item),
-                            offsetY: widget.height * 2,
-                            splashType: widget.itemSplashType,
-                            splashRadius: widget.itemSplashRadius,
-                            child: Center(child: item),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                ),
+                child: icons,
               ),
             ),
           ],
         ),
-      ),
+      );
+    }
+
+    return ColoredBox(
+      color: widget.backgroundColor,
+      child: current,
     );
   }
 
@@ -257,4 +283,51 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
           duration: widget.animationDuration, curve: widget.animationCurve);
     });
   }
+
+  Widget _buildStack(List<Widget> children) => Stack(
+        clipBehavior: Clip.none,
+        alignment: AlignmentDirectional.bottomCenter,
+        children: children,
+      );
+
+  Widget _buildShaderMask(Widget child) => ShaderMask(
+        blendMode: widget.blendMode,
+        shaderCallback: widget.shaderCallback!,
+        child: child,
+      );
+
+  Widget _buildSelectedIcon(MaterialType type) {
+    final icon = Padding(
+      key: ValueKey(_pos),
+      padding: widget.buttonPadding,
+      child: _icon,
+    );
+
+    if (type == MaterialType.transparency) return icon;
+
+    return Material(
+      type: type,
+      color: widget.buttonBackgroundColor ?? widget.color,
+      child: icon,
+    );
+  }
+
+  Widget _buidSelectedIconContainer(MaterialType type, Size parentSize) =>
+      Positioned(
+        bottom: -widget.buttonOffsetY * 1.4,
+        left: Directionality.of(context) == TextDirection.rtl
+            ? null
+            : _pos * parentSize.width,
+        right: Directionality.of(context) == TextDirection.rtl
+            ? _pos * parentSize.width
+            : null,
+        width: parentSize.width / _length,
+        child: Transform.translate(
+          offset: Offset(
+            0,
+            -(1 - _buttonHide) * widget.buttonOffsetY * 2,
+          ),
+          child: _buildSelectedIcon(type),
+        ),
+      );
 }
