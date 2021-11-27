@@ -26,8 +26,10 @@ enum NavItemSplashType {
 
 const NavStyle _defaultNavStyle = NavStyle.planetGravity;
 
+bool _defaultLetIndexChange(int index) => false;
+
 class CurvedNavigationBar extends StatefulWidget {
-  CurvedNavigationBar({
+  const CurvedNavigationBar({
     Key? key,
     this.customNavPathBuilder,
     this.navStyle,
@@ -47,7 +49,7 @@ class CurvedNavigationBar extends StatefulWidget {
     this.animationCurve = Curves.easeOut,
     this.animationDuration = const Duration(milliseconds: 600),
     this.height = 75.0,
-  })  : letSameIndexChange = letIndexChange ?? ((_) => false),
+  })  : letSameIndexChange = letIndexChange ?? _defaultLetIndexChange,
         assert(items.length >= 1),
         assert(0 <= index && index < items.length),
         super(key: key);
