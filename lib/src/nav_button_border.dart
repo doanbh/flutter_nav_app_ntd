@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:curved_navigation_bar/src/nav_path.dart';
 import 'package:flutter/material.dart';
 
