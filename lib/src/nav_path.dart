@@ -70,7 +70,7 @@ class NavPath {
     return path;
   }
 
-  static Path mould(
+  static Path globePedestal(
     double startingLocX,
     Size size,
     int itemsLength,

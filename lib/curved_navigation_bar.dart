@@ -15,7 +15,8 @@ typedef NavPathBuilder = Path Function(
 
 enum NavStyle {
   planetGravity,
-  mould,
+  globePedestal,
+  // mould,
 }
 
 enum NavItemSplashType {

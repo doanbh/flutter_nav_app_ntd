@@ -20,7 +20,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
       extendBody: true,
       bottomNavigationBar: CurvedNavigationBar(
         key: _bottomNavigationKey,
-        navStyle: NavStyle.mould,
+        navStyle: NavStyle.globePedestal,
         index: 0,
         height: 60.0,
         buttonOffsetY: 45,

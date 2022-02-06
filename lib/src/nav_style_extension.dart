@@ -6,8 +6,10 @@ extension NavStyleExtension on NavStyle {
     switch (this) {
       case NavStyle.planetGravity:
         return NavPath.planetGravity;
-      case NavStyle.mould:
-        return NavPath.mould;
+      case NavStyle.globePedestal:
+        return NavPath.globePedestal;
+      // case NavStyle.mould:
+      //   return NavPath.mould;
     }
   }
 }

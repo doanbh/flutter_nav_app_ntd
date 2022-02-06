@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class MouldStylePainter extends CustomPainter {
-  MouldStylePainter({
+class GlobePedestalStylePainter extends CustomPainter {
+  GlobePedestalStylePainter({
     required double startingLocX,
     required int itemsLength,
     required this.color,
