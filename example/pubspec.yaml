@@ -26,6 +26,7 @@ dependencies:
   curved_navigation_bar:
     path: ../
 
+  device_preview: ^1.0.0
 
 dev_dependencies:
   flutter_test:
