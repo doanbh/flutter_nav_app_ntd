@@ -288,7 +288,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
   }
 
   Widget _buildStack(List<Widget> children) => Stack(
-        clipBehavior: Clip.none,
+        clipBehavior: Clip.antiAlias,
         alignment: AlignmentDirectional.bottomCenter,
         children: children,
       );
