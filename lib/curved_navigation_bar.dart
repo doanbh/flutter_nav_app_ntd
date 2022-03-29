@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'src/nav_button.dart';
-import 'src/nav_painter.dart';
-import 'src/nav_stack.dart';
+import 'src/widgets/nav_button.dart';
+import 'src/widgets/nav_painter.dart';
+import 'src/widgets/nav_stack.dart';
 import 'src/nav_style_extension.dart';
-import 'src/selected_icon.dart';
-import 'src/selected_icon_container.dart';
+import 'src/widgets/selected_icon.dart';
+import 'src/widgets/selected_icon_container.dart';
 
 typedef _LetIndexPage = bool Function(int value);
 
