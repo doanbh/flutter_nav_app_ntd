@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'src/nav_button.dart';
 import 'src/nav_painter.dart';
+import 'src/nav_stack.dart';
 import 'src/nav_style_extension.dart';
+import 'src/selected_icon.dart';
+import 'src/selected_icon_container.dart';
 
 typedef _LetIndexPage = bool Function(int value);
 
@@ -136,6 +139,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
     with SingleTickerProviderStateMixin {
   late double _startingPos;
   int _endingIndex = 0;
+  late double _selectedIconContainerBottomPos;
   late double _pos;
   double _buttonHide = 0;
   late Widget _icon;
@@ -147,6 +151,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
     super.initState();
     _icon = widget.items[widget.index];
     _length = widget.items.length;
+    _selectedIconContainerBottomPos = -widget.buttonOffsetY * 1.4;
     _pos = widget.index / _length;
     _startingPos = widget.index / _length;
     _animationController = AnimationController(vsync: this, value: _pos);
@@ -188,10 +193,8 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
     final Size navSize = Size(size.width, widget.height);
     final Path navPath = widget.customNavPathBuilder
             ?.call(_pos, navSize, _length, Directionality.of(context)) ??
-        widget.navStyle
-            ?.pathBuilder(_pos, navSize, _length, Directionality.of(context)) ??
-        _defaultNavStyle.pathBuilder(
-            _pos, navSize, _length, Directionality.of(context));
+        (widget.navStyle ?? _defaultNavStyle)
+            .pathBuilder(_pos, navSize, _length, Directionality.of(context));
 
     final Widget navBar = CustomPaint(
       size: navSize,
@@ -221,12 +224,35 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
 
     final Widget current;
 
+    final selectedIconContainerHorizontalDistance = _pos * size.width;
+    final selectedIconContainerWidth = size.width / _length;
+    final selectedIconContainerYOffset =
+        -(1 - _buttonHide) * widget.buttonOffsetY * 2;
+
+    final Widget selectedIcon = SelectedIcon(
+      key: ValueKey(_endingIndex),
+      iconKey: _endingIndex,
+      iconPadding: widget.buttonPadding,
+      icon: _icon,
+      type: MaterialType.circle,
+      color: widget.buttonBackgroundColor ?? widget.color,
+    );
+
+    final Widget selectedIconContainer = SelectedIconContainer(
+      bottom: _selectedIconContainerBottomPos,
+      horizontalDistance: selectedIconContainerHorizontalDistance,
+      width: selectedIconContainerWidth,
+      yOffset: selectedIconContainerYOffset,
+      icon: selectedIcon,
+    );
+
     if (widget.shaderCallback == null) {
       current = SizedBox.fromSize(
+        key: ValueKey(navSize),
         size: navSize,
-        child: _buildStack(
-          [
-            _buidSelectedIconContainer(MaterialType.circle, size),
+        child: NavStack(
+          children: [
+            selectedIconContainer,
             navBar,
             icons,
           ],
@@ -234,18 +260,36 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
       );
     } else {
       current = SizedBox(
+        key: ValueKey(navSize),
         width: navSize.width,
         height: navSize.height + widget.buttonPadding.vertical,
-        child: _buildStack(
-          [
-            _buildShaderMask(
-              _buildStack([
-                _buidSelectedIconContainer(MaterialType.circle, size),
-              ]),
+        child: NavStack(
+          children: [
+            ShaderMask(
+              blendMode: widget.blendMode,
+              shaderCallback: widget.shaderCallback!,
+              child: NavStack(
+                children: [
+                  selectedIconContainer,
+                ],
+              ),
             ),
-            _buidSelectedIconContainer(MaterialType.transparency, size),
-            _buildShaderMask(
-              SizedBox(
+            SelectedIconContainer(
+              bottom: _selectedIconContainerBottomPos,
+              horizontalDistance: selectedIconContainerHorizontalDistance,
+              width: selectedIconContainerWidth,
+              yOffset: selectedIconContainerYOffset,
+              icon: SelectedIcon(
+                iconKey: _endingIndex,
+                iconPadding: widget.buttonPadding,
+                icon: _icon,
+                type: MaterialType.transparency,
+              ),
+            ),
+            ShaderMask(
+              blendMode: widget.blendMode,
+              shaderCallback: widget.shaderCallback!,
+              child: SizedBox(
                 height: navSize.height,
                 child: navBar,
               ),
@@ -286,54 +330,4 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
           duration: widget.animationDuration, curve: widget.animationCurve);
     });
   }
-
-  Widget _buildStack(List<Widget> children) => Stack(
-        clipBehavior: Clip.antiAlias,
-        alignment: AlignmentDirectional.bottomCenter,
-        children: children,
-      );
-
-  Widget _buildShaderMask(Widget child) => ShaderMask(
-        blendMode: widget.blendMode,
-        shaderCallback: widget.shaderCallback!,
-        child: child,
-      );
-
-  Widget _buildSelectedIcon(MaterialType type) {
-    // wrap w/ Center because case input icon is CustomPainter
-    final icon = Center(
-      key: ValueKey(_endingIndex),
-      child: Padding(
-        padding: widget.buttonPadding,
-        child: _icon,
-      ),
-    );
-
-    if (type == MaterialType.transparency) return icon;
-
-    return Material(
-      type: type,
-      color: widget.buttonBackgroundColor ?? widget.color,
-      child: icon,
-    );
-  }
-
-  Widget _buidSelectedIconContainer(MaterialType type, Size parentSize) =>
-      Positioned(
-        bottom: -widget.buttonOffsetY * 1.4,
-        left: Directionality.of(context) == TextDirection.rtl
-            ? null
-            : _pos * parentSize.width,
-        right: Directionality.of(context) == TextDirection.rtl
-            ? _pos * parentSize.width
-            : null,
-        width: parentSize.width / _length,
-        child: Transform.translate(
-          offset: Offset(
-            0,
-            -(1 - _buttonHide) * widget.buttonOffsetY * 2,
-          ),
-          child: _buildSelectedIcon(type),
-        ),
-      );
 }
