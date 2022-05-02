@@ -1,6 +1,11 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 
+/// * Nav items (icons): Single color (white)
+///
+/// * Avoid system intrusions on the bottom side of the screen
+///
+/// * Using shader for gradient
 void main() => runApp(MaterialApp(home: MyApp()));
 
 class MyApp extends StatefulWidget {

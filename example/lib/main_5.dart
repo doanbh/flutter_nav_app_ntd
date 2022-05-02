@@ -2,6 +2,11 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 
+/// * Using DevicePreview
+///
+/// * Nav items (icons): Single color (white)
+///
+/// * Avoid system intrusions on the bottom side of the screen
 void main() => runApp(
       DevicePreview(
         builder: (_) => MaterialApp(
