@@ -215,10 +215,12 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
     );
 
     Widget icons = Row(
+      key: Key('icons'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: widget.items
           .map(
             (item) => Expanded(
+              key: ValueKey(item.hashCode),
               child: NavButton(
                 onTap: _buttonTap,
                 navPath: navPath,
@@ -229,7 +231,10 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                 offsetY: widget.height * 2,
                 splashType: widget.itemSplashType,
                 splashRadius: widget.itemSplashRadius,
-                child: Center(child: item),
+                child: Center(
+                  key: ValueKey(item.hashCode),
+                  child: item,
+                ),
               ),
             ),
           )
@@ -238,10 +243,14 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
 
     if (effectiveViewPaddingBottom != 0) {
       icons = Column(
+        key: Key('icons-container'),
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(child: icons),
-          SizedBox(height: effectiveViewPaddingBottom),
+          SizedBox(
+            key: ValueKey(effectiveViewPaddingBottom),
+            height: effectiveViewPaddingBottom,
+          ),
         ],
       );
     }
@@ -266,6 +275,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
         _selectedIconContainerBottomPos + effectiveViewPaddingBottom;
 
     final Widget selectedIconContainer = SelectedIconContainer(
+      key: ValueKey(_endingIndex),
       bottom: effectiveSelectedIconContainerBottomPos,
       horizontalDistance: selectedIconContainerHorizontalDistance,
       width: selectedIconContainerWidth,
@@ -293,6 +303,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
         child: NavStack(
           children: [
             ShaderMask(
+              key: Key('selectedIconContainer-ShaderMask'),
               blendMode: widget.blendMode,
               shaderCallback: widget.shaderCallback!,
               child: NavStack(
@@ -314,6 +325,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
               ),
             ),
             ShaderMask(
+              key: Key('navBar-ShaderMask'),
               blendMode: widget.blendMode,
               shaderCallback: widget.shaderCallback!,
               child: SizedBox(
@@ -334,6 +346,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
     }
 
     return ColoredBox(
+      key: ValueKey(widget.backgroundColor),
       color: widget.backgroundColor,
       child: current,
     );

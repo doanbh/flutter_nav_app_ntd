@@ -45,18 +45,22 @@ class NavButton extends StatelessWidget {
         itemsLength: length,
       );
 
+    final span = 1.0 / length;
+
     Widget current = Transform.translate(
-      offset: Offset(
-          0, difference < 1.0 / length ? verticalAlignment * offsetY : 0),
+      offset: Offset(0, difference < span ? verticalAlignment * offsetY : 0),
       child: Opacity(
-        opacity: difference < 1.0 / length * 0.99 ? opacity : 1.0,
+        opacity: difference < span * 0.99 ? opacity : 1.0,
         child: child,
       ),
     );
 
+    final Key buttonKey = ValueKey(splashType);
+
     switch (splashType) {
       case NavItemSplashType.none:
         current = GestureDetector(
+          key: buttonKey,
           behavior: HitTestBehavior.translucent,
           onTap: () => onTap(index),
           child: current,
@@ -64,6 +68,7 @@ class NavButton extends StatelessWidget {
         break;
       case NavItemSplashType.rectangle:
         current = InkWell(
+          key: buttonKey,
           onTap: () => onTap(index),
           radius: splashRadius,
           customBorder: shape,
@@ -72,6 +77,7 @@ class NavButton extends StatelessWidget {
         break;
       case NavItemSplashType.circle:
         current = Center(
+          key: buttonKey,
           child: InkResponse(
             onTap: () => onTap(index),
             containedInkWell: true,
