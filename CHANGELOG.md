@@ -1,3 +1,14 @@
+## [1.3.0]
+- feat: avoid system intrusions on the bottom side of the screen
+- improve performance
+
+## [1.2.1]
+- fix ui: when items (icons) is CustomPainter
+- rename nav styles
+
+## [1.2.0]
+- adding shader (for gradient)
+
 ## [1.0.1]
 - make the example compatible with dart >= 2.12.0
 
