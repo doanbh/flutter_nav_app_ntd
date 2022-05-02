@@ -11,7 +11,7 @@ class NavStack extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      clipBehavior: Clip.antiAlias,
+      clipBehavior: Clip.none,
       alignment: AlignmentDirectional.bottomCenter,
       children: children,
     );

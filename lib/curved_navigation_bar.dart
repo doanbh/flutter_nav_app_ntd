@@ -9,6 +9,8 @@ import 'src/widgets/selected_icon_container.dart';
 
 typedef _LetIndexPage = bool Function(int value);
 
+/// [size] include [MediaQuery.of(context).viewPadding.bottom]
+/// if [CurvedNavigationBar.bottom] is [true]
 typedef NavPathBuilder = Path Function(
   double startingLocX,
   Size size,
@@ -53,6 +55,7 @@ class CurvedNavigationBar extends StatefulWidget {
     this.animationCurve = Curves.easeOut,
     this.animationDuration = const Duration(milliseconds: 600),
     this.height = 75.0,
+    this.bottom = true,
   })  : letSameIndexChange = letIndexChange ?? _defaultLetIndexChange,
         assert(items.length >= 1),
         assert(0 <= index && index < items.length),
@@ -131,6 +134,9 @@ class CurvedNavigationBar extends StatefulWidget {
   /// Height of NavigationBar, min 0.0, max 75.0
   final double height;
 
+  /// Whether to avoid system intrusions on the bottom side of the screen.
+  final bool bottom;
+
   @override
   CurvedNavigationBarState createState() => CurvedNavigationBarState();
 }
@@ -190,7 +196,14 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-    final Size navSize = Size(size.width, widget.height);
+
+    final double effectiveViewPaddingBottom =
+        widget.bottom ? MediaQuery.of(context).viewPadding.bottom : 0;
+
+    final Size navSize = Size(
+      size.width,
+      widget.height + effectiveViewPaddingBottom,
+    );
     final Path navPath = widget.customNavPathBuilder
             ?.call(_pos, navSize, _length, Directionality.of(context)) ??
         (widget.navStyle ?? _defaultNavStyle)
@@ -201,7 +214,8 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
       painter: NavPainter(navPath, widget.color),
     );
 
-    final Widget icons = Row(
+    Widget icons = Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: widget.items
           .map(
             (item) => Expanded(
@@ -222,6 +236,16 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
           .toList(),
     );
 
+    if (effectiveViewPaddingBottom != 0) {
+      icons = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: icons),
+          SizedBox(height: effectiveViewPaddingBottom),
+        ],
+      );
+    }
+
     final Widget current;
 
     final selectedIconContainerHorizontalDistance = _pos * size.width;
@@ -238,8 +262,11 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
       color: widget.buttonBackgroundColor ?? widget.color,
     );
 
+    final effectiveSelectedIconContainerBottomPos =
+        _selectedIconContainerBottomPos + effectiveViewPaddingBottom;
+
     final Widget selectedIconContainer = SelectedIconContainer(
-      bottom: _selectedIconContainerBottomPos,
+      bottom: effectiveSelectedIconContainerBottomPos,
       horizontalDistance: selectedIconContainerHorizontalDistance,
       width: selectedIconContainerWidth,
       yOffset: selectedIconContainerYOffset,
@@ -275,7 +302,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
               ),
             ),
             SelectedIconContainer(
-              bottom: _selectedIconContainerBottomPos,
+              bottom: effectiveSelectedIconContainerBottomPos,
               horizontalDistance: selectedIconContainerHorizontalDistance,
               width: selectedIconContainerWidth,
               yOffset: selectedIconContainerYOffset,

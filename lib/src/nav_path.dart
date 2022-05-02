@@ -136,29 +136,29 @@ class NavPath {
         pointNo4X + 5.54100,
         0,
         pointNo5X,
-        size.height * 0.09931667,
+        5.5,
         pointNo5X,
-        size.height * 0.1916667,
+        11.5,
       )
       ..cubicTo(
         pointNo5X,
-        size.height * 0.4448000,
+        26.688,
         notchCenterX - 15.18800,
-        size.height * 0.6500000,
+        39,
         notchCenterX,
-        size.height * 0.6500000,
+        39,
       )
       ..cubicTo(
         notchCenterX + 15.18800,
-        size.height * 0.6500000,
+        39,
         pointNo7X,
-        size.height * 0.4448000,
+        26.688,
         pointNo7X,
-        size.height * 0.1916667,
+        11.5,
       )
       ..cubicTo(
         pointNo7X,
-        size.height * 0.09931667,
+        5.5,
         pointNo8X - 5.54100,
         0,
         pointNo8X,
