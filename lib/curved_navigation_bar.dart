@@ -178,6 +178,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
   @override
   void didUpdateWidget(CurvedNavigationBar oldWidget) {
     super.didUpdateWidget(oldWidget);
+    _icon = widget.items[widget.index];
     if (oldWidget.index != widget.index) {
       final newPosition = widget.index / _length;
       _startingPos = _pos;
